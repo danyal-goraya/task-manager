@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: taskuser
+      POSTGRES_PASSWORD: taskpass
+      POSTGRES_DB: taskdb
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    image: ${DOCKERHUB_USER:-local}/taskmanager-backend:latest
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    image: ${DOCKERHUB_USER:-local}/taskmanager-frontend:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  dbdata:
